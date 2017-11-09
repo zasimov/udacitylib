@@ -98,7 +98,7 @@ def load_pickle(file_name):
     return Samples(dataset['features'], dataset['targets'])
 
 
-def load_hdf5(file_name):
+def load_hdf5(file_name, group=None):
     """load_hdf5 loads the data set from HDF5 file
 
     HDF5 file should contain 
@@ -113,8 +113,10 @@ def load_hdf5(file_name):
 
     h5 = h5py.File(file_name, 'r')
     try:
-        features = np.array(h5['features'])
-        targets = np.array(h5['targets'])
+        ds = h5[group] if group else h5
+
+        features = np.array(ds['features'])
+        targets = np.array(ds['targets'])
 
         return Samples(features, targets)
     finally:
