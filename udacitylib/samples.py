@@ -128,9 +128,8 @@ class HDF5Samples:
     FEATURES = 'features'
     TARGETS = 'targets'
 
-    def __init__(self, file_name, group_name=None, do_not_open=False):
+    def __init__(self, file_name, do_not_open=False):
         self.file_name = file_name
-        self.group_name = group_name
         if not do_not_open:
             self._h5 = h5py.File(file_name, 'r')
         else:
@@ -152,11 +151,11 @@ class HDF5Samples:
     def __exit__(self, *args):
         return self.close()
 
-    @property
-    def group(self):
-        if self.group_name:
-            return self._h5[self.group_name]
-        return self._h5
+    def group(self, group_name):
+        """group returns Samples from specific group"""
+        features = self._h5[group_name][self.FEATURES]
+        targets = self._h5[group_name][self.TARGETS]
+        return Samples(features, targets)
 
     @property
     def features(self):
@@ -165,3 +164,4 @@ class HDF5Samples:
     @property
     def targets(self):
         return self.group[self.TARGETS]
+
