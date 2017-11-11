@@ -18,4 +18,7 @@ def get_available_gpus():
 
 
 if __name__ == '__main__':
-    print('GPU: %s' % get_available_gpus())
+    gpus = get_available_gpus()
+    print('GPU: %s' % gpus)
+    if not gpus:
+        exit(1)
