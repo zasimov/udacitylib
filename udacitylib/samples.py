@@ -46,7 +46,12 @@ class Samples(collections.namedtuple('Samples', ['features', 'targets'])):
         for start in range(0, len(self), batch_size):
             features = self.features[start:start + batch_size]
             targets = self.targets[start:start + batch_size]
+
             yield Samples(features, targets)
+
+    def raw_batches(self, batch_size):
+        for batch in self.batches(batch_size):
+            yield batch.features, batch.targets
 
     def map(self, fn):
         features = []
@@ -151,10 +156,17 @@ class HDF5Samples:
     def __exit__(self, *args):
         return self.close()
 
-    def group(self, group_name):
+    def group(self, group_name, features_fn=None, targets_fn=None):
         """group returns Samples from specific group"""
         features = self._h5[group_name][self.FEATURES]
         targets = self._h5[group_name][self.TARGETS]
+
+        if features_fn:
+            features = features_fn(features)
+
+        if targets_fn:
+            targets = targets_fn(targets)
+
         return Samples(features, targets)
 
     @property
